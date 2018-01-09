@@ -3,9 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+    <script src="./socket.io.js"></script>
+    <script>
+        var socket = io();
+
+        socket.on('message', function(message){
+            console.log(message);
+        });
+
+        socket.emit('message', 'Hi im the client');
+    </script>
     <title>Website</title>
 </head>
 <body>
-    Node is running
+    
 </body>
 </html>
