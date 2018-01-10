@@ -14,7 +14,7 @@ module.exports = function(io){
 			if(findClientName(socket) != null){
 				//user is logged in, log him out.
 				console.log(`User ${findClientName(socket)} disconnected`);
-				io.sockets.emit('connected',`User ${findClientName(socket)} disconnected`)
+				io.sockets.emit('chatupdate',`User ${findClientName(socket)} disconnected`)
 				delete clients[findClientName(socket)];
 			}
 		});
@@ -43,7 +43,7 @@ module.exports = function(io){
 			clients[array[1]] = socket;
 			console.log(`User ${array[1]} has logged in!`);
 			socket.emit('showTemp', `Succesfully logged in as ${array[1]}`, 2000);
-			io.sockets.emit('connected', `${array[1]} has connected`);
+			io.sockets.emit('chatupdate', `${array[1]} has connected`);
 		});
 
 		socket.on('auth', function(array){
@@ -61,7 +61,7 @@ module.exports = function(io){
 			administrators[findClientName(socket)] = 1;
 		});
 
-		socket.on('clear', function(array){
+		socket.on('clearall', function(array){
 			if(!isAdmin(findClientName(socket))){
 				socket.emit('showTemp', "You have to be admin to run that command", 2000);
 				return;
@@ -71,6 +71,15 @@ module.exports = function(io){
 				return;
 			}
 			io.sockets.emit('clear');
+			io.sockets.emit('chatupdate', "An admin cleared the chat")
+		});
+
+		socket.on('clear', function(array){
+			if(array.length != 1){
+				socket.emit('showTemp', 'Usage "clear"', 2000);
+				return;
+			}
+			socket.emit('clear');
 		});
 
 		socket.on('whisper', function(array){

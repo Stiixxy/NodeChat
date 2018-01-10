@@ -76,6 +76,6 @@ socket.on('clear', function(){
     }
 });
 
-socket.on('connected', function(message){
+socket.on('chatupdate', function(message){
     addMessage(message, "messageConnected");
 });
