@@ -11,6 +11,11 @@ module.exports = function(io){
 			socket.broadcast.emit('receivedMessage', message);
 		});
 
+		//Example command
+		socket.on('Hello', function(array){
+			socket.emit('showTemp', "Welcome user", 2000);
+		});
+
 		console.log(`User ${socket.id} connected`);
 	});
 
