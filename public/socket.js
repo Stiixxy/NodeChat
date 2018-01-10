@@ -75,3 +75,7 @@ socket.on('clear', function(){
         chatBox.removeChild(chatBox.firstChild);
     }
 });
+
+socket.on('connected', function(message){
+    addMessage(message, "messageConnected");
+});

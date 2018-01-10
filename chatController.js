@@ -14,6 +14,7 @@ module.exports = function(io){
 			if(findClientName(socket) != null){
 				//user is logged in, log him out.
 				console.log(`User ${findClientName(socket)} disconnected`);
+				io.sockets.emit('connected',`User ${findClientName(socket)} disconnected`)
 				delete clients[findClientName(socket)];
 			}
 		});
@@ -21,7 +22,7 @@ module.exports = function(io){
 		socket.on('sendMessage', function(message){
 			if(!checkLogin(socket)) return;
 			var name = findClientName(socket);
-			socket.broadcast.emit('receivedMessage', `${name}: message`);
+			socket.broadcast.emit('receivedMessage', `${name}: ${message}`);
 			socket.emit('ownMessage', message);
 		});
 		
@@ -42,6 +43,7 @@ module.exports = function(io){
 			clients[array[1]] = socket;
 			console.log(`User ${array[1]} has logged in!`);
 			socket.emit('showTemp', `Succesfully logged in as ${array[1]}`, 2000);
+			io.sockets.emit('connected', `${array[1]} has connected`);
 		});
 
 		socket.on('auth', function(array){
@@ -68,8 +70,33 @@ module.exports = function(io){
 				socket.emit('showTemp', 'Usage "clear"', 2000);
 				return;
 			}
-			socket.broadcast.emit('clear');
-			socket.emit('clear');
+			io.sockets.emit('clear');
+		});
+
+		socket.on('whisper', function(array){
+			if(!checkLogin(socket)) return;
+
+			if(array.length <= 2){
+				socket.emit('showTemp', `Usage "whisper name text"`, 2000);
+				return;
+			}
+
+			var message = "";
+			for(var i = 2; i < array.length; i++){
+				message += array[i];
+				message += " ";
+			}
+			message = message.substr(0, message.length - 1);
+
+			var targetSocket = findClientSocket(array[1]);
+			if(targetSocket == null){
+				socket.emit('showTemp', "User not found", 2000);
+				return;
+			}
+			
+			targetSocket.emit('receivedMessage', `${findClientName(socket)} has whispered "${message}"`);
+			socket.emit('ownMessage', ` you whispered "${message}" to ${findClientName(targetSocket)}`);
+			
 		});
 
 		//Example command
