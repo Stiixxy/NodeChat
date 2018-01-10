@@ -1,0 +1,13 @@
+.message{
+    font-size: 40px;
+}
+
+.ourMessage{
+    text-align: right;
+    background-color: darkgray;
+}
+
+.theirMessage{
+    text-align: left;
+    background-color: lightgray;
+}
