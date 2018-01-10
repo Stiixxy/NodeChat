@@ -59,6 +59,19 @@ module.exports = function(io){
 			administrators[findClientName(socket)] = 1;
 		});
 
+		socket.on('clear', function(array){
+			if(!isAdmin(findClientName(socket))){
+				socket.emit('showTemp', "You have to be admin to run that command", 2000);
+				return;
+			}
+			if(array.length != 1){
+				socket.emit('showTemp', 'Usage "clear"', 2000);
+				return;
+			}
+			socket.broadcast.emit('clear');
+			socket.emit('clear');
+		});
+
 		//Example command
 		socket.on('Hello', function(array){
 			socket.emit('showTemp', "Welcome user", 2000);

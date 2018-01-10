@@ -1,10 +1,17 @@
 var socket = io();
 
+var chatBox;
+var messageBox;
+
+$( document ).ready(function() {
+    chatBox = document.getElementById('chatBox');
+    messageBox = document.getElementById('messageBox');
+});
+
 function enterPressed(event){
     if(event.keycode == 13 || event.which == 13){
-        var textBox = document.getElementById('messageBox');
-        var messageText = textBox.value.trim();
-        textBox.value = "";
+        var messageText = messageBox.value.trim();
+        messageBox.value = "";
         if(messageText.length > 0){
             //Check if it is a command, if so send it
             if(messageText.startsWith("/")){
@@ -24,7 +31,7 @@ function addMessage(message, whos){
     chatItem.classList.add('message');                    
     chatItem.classList.add(whos);
     chatItem.innerHTML=message;
-    document.getElementById('chatBox').appendChild(chatItem);
+    chatBox.appendChild(chatItem);
     return chatItem;
 }
 
@@ -38,7 +45,7 @@ function showTemp(message, time){
     chatItem.classList.add('message');                    
     chatItem.classList.add("messageTemp");
     chatItem.innerHTML=message;
-    insertAfter(chatItem, document.getElementById('chatBox'));
+    insertAfter(chatItem, chatBox);
 
     setTimeout(function(){
         document.body.removeChild(chatItem);
@@ -61,4 +68,10 @@ socket.on('showTemp', function(message, time){
 socket.on('ownMessage', function(message){
    	//Add our own message to the box
     addMessage(message, "ourMessage");
+});
+
+socket.on('clear', function(){
+    while (chatBox.firstChild) {
+        chatBox.removeChild(chatBox.firstChild);
+    }
 });
