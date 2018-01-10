@@ -4,19 +4,17 @@ function enterPressed(event){
     if(event.keycode == 13 || event.which == 13){
         var textBox = document.getElementById('messageBox');
         var messageText = textBox.value.trim();
+        textBox.value = "";
         if(messageText.length > 0){
-            //Send the message to the server and clear textbox
-            socket.emit("sendMessage", messageText);
-            textBox.value = "";
-
+            //Check if it is a command, if so send it
             if(messageText.startsWith("/")){
                 messageText = messageText.substring(1);
                 sendCommand(messageText);
                 return;
             }
 
-            //Add our own message to the box
-            addMessage(messageText, "ourMessage");
+            //Send the message to the server and clear textbox
+            socket.emit("sendMessage", messageText);
         }
     }
 }
@@ -36,11 +34,19 @@ function sendCommand(message){
 }
 
 function showTemp(message, time){
-    var chatItem = addMessage(message, "messageTemp");
-    
+    var chatItem = document.createElement('div');
+    chatItem.classList.add('message');                    
+    chatItem.classList.add("messageTemp");
+    chatItem.innerHTML=message;
+    insertAfter(chatItem, document.getElementById('chatBox'));
+
     setTimeout(function(){
-        document.getElementById('chatBox').removeChild(chatItem);
+        document.body.removeChild(chatItem);
     }, time);
+}
+
+function insertAfter(newNode, referenceNode) {
+    referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
 }
 
 socket.on('receivedMessage', function(message){
@@ -50,4 +56,9 @@ socket.on('receivedMessage', function(message){
 
 socket.on('showTemp', function(message, time){
     showTemp(message, time);
+});
+
+socket.on('ownMessage', function(message){
+   	//Add our own message to the box
+    addMessage(message, "ourMessage");
 });
