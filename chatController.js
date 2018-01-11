@@ -108,6 +108,25 @@ module.exports = function(io){
 			
 		});
 
+		socket.on('online', function(array){
+			if(!checkLogin(socket)) return;
+
+			var message = "";
+			for(key in clients){
+				if(isAdmin(key)) {
+					message += `<span style="color:red">`;
+					message += key;
+					message += "</span>";
+				}else{
+					message += key;
+				}
+				message += ',';
+			}
+			message = message.substr(0, message.length - 1);
+
+			socket.emit('receivedMessage', `Users online: ${message}`);
+		});
+
 		//Example command
 		socket.on('Hello', function(array){
 			socket.emit('showTemp', "Welcome user", 2000);
